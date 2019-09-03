@@ -52,24 +52,28 @@ class HomeScreen extends React.Component<NavigationProp> {
           this.state.list.map(task => {
             console.log({task});
             return (
-            <View key={task.taskName}>
+            <Card key={task.taskName}>
               <Text style={{marginBottom: 10}}>
                 {task.displayName}
               </Text>
-              <Button onPress={()=>this.props.navigation.push('Details', {taskName:task.tsakName})} >
-                記録する
-              </Button>
-            </View>);
+              <Button 
+              title="記録する"
+              onPress={()=>this.props.navigation.push('Details', {taskName:task.taskName})} 
+              />
+              
+              
+            </Card>);
           })
         }
       </Card>
     );
   }
 }
-class DetailsScreen extends React.Component {
+class DetailsScreen extends React.Component<NavigationProp> {
   
   render() {
     const taskName = this.props.navigation.getParam('taskName')
+    console.log('in DetailsScreen',{taskName})
     return (
       <Counter taskName={taskName}/>
     );

@@ -5,18 +5,20 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 
-const  recordTime = async (taskId:string,time:number) => {
+const  recordTime = async ({userId, taskName,startAt,endAt}:{userId:string, taskName:string,startAt:string, endAt:string}) => {
     let db = firebase.firestore();
   
     try {
-      const docRef = await db.collection("aaa").add({
-        taskId,
-        time,
+      const docRef = await db.collection("times").add({
+        userId,
+        taskName,
+        startAt,
+        endAt,
       })
   
       console.log({docrefId:docRef.id});
     } catch(e) {
-      console.error(`Error adding document:taskId=${taskId}, time=${time} `, e);
+      console.error(`Error adding document:taskName=${taskName}, time=${startAt} - ${endAt} `, e);
     }
   }
 
@@ -27,7 +29,8 @@ interface Props {
 
 interface State {
   intervalId: number| undefined;
-  counter: number;
+  startAt: string | undefined;
+  endAt:string | undefined;
 }
 
 export default class Counter extends React.Component<Props, State> {
@@ -36,12 +39,14 @@ export default class Counter extends React.Component<Props, State> {
   //stateを定義
   state: State = {
     intervalId:undefined,
-    counter : 0
+    startAt : undefined,
+    endAt:undefined,
   }
 
   timerStart = () => {
+    this.setState({startAt:Date()})
     const id = setInterval(() => {
-      this.setState({counter:this.state.counter+1})
+        this.setState({endAt:Date()})
     })
     this.setState({intervalId: id})
   }
@@ -49,7 +54,7 @@ export default class Counter extends React.Component<Props, State> {
   timerStop = () => {
     clearInterval(this.state.intervalId)
     this.setState({intervalId:undefined})
-    recordTime(this.props.taskName, this.state.counter)
+    recordTime({userId:'dummy001', ...this.props, ...this.state})
   }
 
   render() {
@@ -66,11 +71,15 @@ export default class Counter extends React.Component<Props, State> {
         onPress={this.timerStop}
       />
     }
+    const t = ((new Date(this.state.endAt)).getTime() - (new Date(this.state.startAt)).getTime())/1000.0
     return (
       <View style={{flex:1, paddingVertical:80}}>
         <Card title="カウンタ">
+        <Text  style={{marginTop:30, marginLeft:30}}>
+            開始時間:{this.state.startAt}
+          </Text>
           <Text h4 style={{marginTop:30, marginLeft:30}}>
-            {`${this.state.counter/100}`}
+            {`${t || 0 }`}
           </Text>
           {button}
         </Card>
