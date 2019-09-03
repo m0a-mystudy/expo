@@ -3,7 +3,7 @@ import 'firebase/firestore';
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from 'react-native-elements';
-import { createAppContainer, NavigationProp } from 'react-navigation';
+import { createAppContainer, NavigationContainerProps } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Counter from './components/counter'
 
@@ -18,7 +18,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-class HomeScreen extends React.Component<NavigationProp> {
+class HomeScreen extends React.Component<NavigationContainerProps> {
 
   state = {
     list:[]
@@ -43,7 +43,6 @@ class HomeScreen extends React.Component<NavigationProp> {
     
   }
   render() {
-    // const tasks  = this.state.list.map(d => <Task {...d} key={d.tsakName} onPress={()=>this.props.navigation.push('Details', {taskName:d.tsakName})} />)
     return (
       <Card
         title='タスクリスト'
@@ -57,11 +56,11 @@ class HomeScreen extends React.Component<NavigationProp> {
                 {task.displayName}
               </Text>
               <Button 
-              title="記録する"
-              onPress={()=>this.props.navigation.push('Details', {taskName:task.taskName})} 
+                title="記録する"
+                onPress={
+                  ()=>this.props.navigation.push('Details', {taskName:task.taskName})
+                } 
               />
-              
-              
             </Card>);
           })
         }
@@ -69,13 +68,12 @@ class HomeScreen extends React.Component<NavigationProp> {
     );
   }
 }
-class DetailsScreen extends React.Component<NavigationProp> {
+class DetailsScreen extends React.Component<NavigationContainerProps> {
   
   render() {
     const taskName = this.props.navigation.getParam('taskName')
-    console.log('in DetailsScreen',{taskName})
     return (
-      <Counter taskName={taskName}/>
+      <Counter taskName={taskName} OnStop={()=> this.props.navigation.goBack()}/>
     );
   }
 }

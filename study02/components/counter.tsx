@@ -25,6 +25,7 @@ const  recordTime = async ({userId, taskName,startAt,endAt}:{userId:string, task
 
 interface Props {
     taskName: string
+    OnStop:()=>void
 }
 
 interface State {
@@ -51,10 +52,11 @@ export default class Counter extends React.Component<Props, State> {
     this.setState({intervalId: id})
   }
 
-  timerStop = () => {
+  timerStop = async () => {
     clearInterval(this.state.intervalId)
     this.setState({intervalId:undefined})
-    recordTime({userId:'dummy001', ...this.props, ...this.state})
+    await recordTime({userId:'dummy001', ...this.props, ...this.state})
+    this.props.OnStop()
   }
 
   render() {
